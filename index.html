@@ -1,348 +1,45 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xevin - User Dashboard</title>
-  <link rel="icon" type="image/png" href="SaiKuto.png">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XEVIN Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background:#050505; color:#e5e5e5; font-family:'Outfit',sans-serif; min-height:100vh; }
-    .container { max-width:1200px; margin:0 auto; padding:24px; }
-    .header { display:flex; justify-content:space-between; align-items:center; padding-bottom:24px; margin-bottom:32px; border-bottom:1px solid rgba(255,255,255,.05); }
-    .header-left { display:flex; align-items:center; gap:16px; }
-    .header-logo { width:48px; height:48px; border-radius:12px; object-fit:cover; box-shadow:0 0 20px rgba(255,26,26,.4); }
-    .header-title { font-size:24px; font-weight:700; color:#fff; text-shadow:0 0 20px rgba(255,26,26,.5); }
-    .header-subtitle { font-size:14px; color:#888; font-weight:300; }
-    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:8px 16px; border-radius:10px; border:none; font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; transition:.2s; }
-    .btn-glass { background:rgba(18,18,18,.6); color:#e5e5e5; border:1px solid rgba(255,255,255,.05); backdrop-filter:blur(16px); }
-    .btn-glass:hover { background:rgba(255,255,255,.05); color:#fff; }
-    .btn-red { background:linear-gradient(135deg,#ff1a1a,#e60000); color:#fff; box-shadow:0 4px 15px rgba(255,26,26,.25); }
-    .btn-red:hover { background:linear-gradient(135deg,#ff4d4d,#ff1a1a); }
-    .btn-red:disabled { opacity:.55; cursor:not-allowed; }
-    .btn-danger-sm { padding:8px; border-radius:8px; border:none; background:rgba(255,26,26,.1); color:#ff4d4d; cursor:pointer; transition:.2s; display:inline-flex; align-items:center; justify-content:center; }
-    .btn-danger-sm:hover { background:#ff1a1a; color:#fff; transform:scale(1.05); }
-    .glass { background:rgba(18,18,18,.6); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.05); box-shadow:0 4px 30px rgba(0,0,0,.5); border-radius:16px; }
-    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-bottom:32px; }
-    .stat-card { padding:24px; position:relative; overflow:hidden; }
-    .stat-card .glow { position:absolute; right:-24px; top:-24px; width:96px; height:96px; border-radius:50%; filter:blur(40px); }
-    .stat-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
-    .stat-label { font-size:14px; color:#888; margin-bottom:4px; }
-    .stat-value { font-size:36px; font-weight:700; color:#fff; }
-    .stat-icon { padding:12px; border-radius:12px; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; color:#fff; }
-    .stat-desc { font-size:12px; color:#555; }
-    .main-grid { display:grid; grid-template-columns:1fr 2fr; gap:32px; }
-    .form-group { margin-bottom:16px; }
-    .form-label { display:block; font-size:12px; font-weight:500; color:#888; margin-bottom:8px; }
-    .form-input, .form-select { width:100%; padding:12px 16px; border-radius:12px; background:#0a0a0a; border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; font-size:14px; outline:none; transition:.2s; }
-    .form-input:focus, .form-select:focus { border-color:#ff1a1a; box-shadow:0 0 0 2px rgba(255,26,26,.15); }
-    .form-input::placeholder { color:#444; }
-    .form-static { width:100%; padding:12px 16px; border-radius:12px; background:#0a0a0a; border:1px solid rgba(255,255,255,.05); color:#ff4d4d; font-size:14px; opacity:.8; display:flex; align-items:center; gap:8px; }
-    .table-header { padding:20px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,.05); background:rgba(255,255,255,.01); }
-    .table-title { font-size:18px; font-weight:600; color:#fff; display:flex; align-items:center; gap:8px; }
-    .search-box { position:relative; }
-    .search-box input { padding:8px 16px 8px 36px; border-radius:8px; background:#0a0a0a; border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; font-size:14px; outline:none; width:240px; }
-    .search-box .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#555; }
-    table { width:100%; text-align:left; font-size:14px; border-collapse:collapse; }
-    thead tr { border-bottom:1px solid rgba(255,255,255,.05); }
-    th { padding:12px 16px; font-size:11px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:1px; }
-    td { padding:16px; }
-    tbody tr { border-bottom:1px solid rgba(255,255,255,.03); transition:.2s; }
-    tbody tr:hover { background:rgba(255,255,255,.015); }
-    .mono { font-family:'Courier New',monospace; color:#ccc; font-size:13px; word-break:break-all; }
-    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; }
-    .badge-active { background:rgba(16,185,129,.1); color:#34d399; border:1px solid rgba(16,185,129,.2); }
-    .badge-inactive { background:rgba(239,68,68,.1); color:#f87171; border:1px solid rgba(239,68,68,.2); }
-    .badge-available { background:rgba(59,130,246,.1); color:#60a5fa; border:1px solid rgba(59,130,246,.2); cursor:default; }
-    .badge-dot { width:6px; height:6px; border-radius:50%; }
-    .dot-active { background:#10b981; }
-    .dot-inactive { background:#ef4444; }
-    .empty-state,.loading-state { padding:40px 16px; text-align:center; color:#555; font-size:14px; }
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); backdrop-filter:blur(8px); display:flex; justify-content:center; align-items:center; z-index:1000; opacity:0; pointer-events:none; transition:.3s; }
-    .modal-overlay.active { opacity:1; pointer-events:auto; }
-    .modal-box { background:#111; border:1px solid rgba(255,26,26,.2); border-radius:20px; padding:32px; width:100%; max-width:400px; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 20px rgba(255,26,26,.1); }
-    .modal-icon { width:64px; height:64px; border-radius:50%; background:rgba(255,26,26,.1); color:#ff1a1a; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; }
-    .modal-title { font-size:20px; font-weight:700; color:#fff; margin-bottom:12px; }
-    .modal-desc { font-size:14px; color:#888; margin-bottom:24px; line-height:1.5; }
-    .modal-actions { display:flex; gap:12px; }
-    .modal-btn { flex:1; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; transition:.2s; border:0; }
-    .modal-btn-cancel { background:#222; color:#ccc; border:1px solid #333; }
-    .toast-container { position:fixed; bottom:24px; right:24px; z-index:999; display:flex; flex-direction:column; gap:8px; }
-    .toast { padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:10px; background:rgba(18,18,18,.9); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.05); box-shadow:0 4px 30px rgba(0,0,0,.5); animation:slideIn .3s ease-out; }
-    .toast-success { border-left:3px solid #10b981; }
-    .toast-error { border-left:3px solid #ef4444; }
-    .toast-text { font-size:14px; font-weight:500; color:#fff; }
-    @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
-
-    .auth-container { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-    .auth-box { width:100%; max-width:410px; padding:36px; text-align:center; background:rgba(18,18,18,.82); border:1px solid rgba(255,26,26,.14); border-radius:24px; box-shadow:0 20px 45px rgba(0,0,0,.55),0 0 35px rgba(255,26,26,.08); backdrop-filter:blur(18px); }
-    .auth-title { font-size:26px; font-weight:800; color:#fff; margin-bottom:6px; letter-spacing:.5px; }
-    .auth-subtitle { color:#888; font-size:14px; margin-bottom:26px; }
-    .auth-input { width:100%; padding:14px 16px; margin-bottom:14px; background:#0a0a0a; border:1px solid rgba(255,255,255,.1); color:#fff; border-radius:12px; font-family:inherit; font-size:15px; outline:none; }
-    .auth-input:focus { border-color:#ff1a1a; box-shadow:0 0 0 2px rgba(255,26,26,.15); }
-    .auth-note { margin-top:14px; color:#666; font-size:12px; line-height:1.5; }
-
-    @media(max-width:900px){ .main-grid{grid-template-columns:1fr;} .stats-grid{grid-template-columns:1fr;} }
-    @media(max-width:600px){ .container{padding:12px;} .header{flex-direction:column; text-align:center; gap:20px;} .header-left{flex-direction:column; gap:8px;} .table-header{flex-direction:column; align-items:stretch; gap:16px;} .search-box input{width:100%;} table{min-width:720px;} .toast-container{left:16px; right:16px;} }
+    :root{--bg:#050507;--panel:#0e0e12;--card:#121217;--card2:#17171f;--line:rgba(255,255,255,.08);--txt:#f5f5f7;--muted:#8d8d99;--red:#ff2436;--red2:#b80015;--green:#18d18f;--yellow:#ffc043;--blue:#4f8cff;--purple:#a855f7;--shadow:0 20px 80px rgba(0,0,0,.55)}
+    *{box-sizing:border-box;margin:0;padding:0} body{min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(255,36,54,.20),transparent 36%),radial-gradient(circle at 100% 10%,rgba(168,85,247,.13),transparent 30%),linear-gradient(180deg,#050507,#07070a 55%,#030304);color:var(--txt);font-family:Outfit,system-ui,sans-serif;overflow-x:hidden}.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);pointer-events:none}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:22px}.login-card{width:min(440px,100%);background:linear-gradient(180deg,rgba(18,18,24,.94),rgba(9,9,12,.94));border:1px solid rgba(255,36,54,.18);border-radius:28px;padding:34px;box-shadow:var(--shadow),0 0 80px rgba(255,36,54,.08);position:relative;overflow:hidden}.login-card:before{content:"";position:absolute;inset:-2px;background:linear-gradient(120deg,transparent,rgba(255,36,54,.22),transparent);transform:translateX(-100%);animation:shine 5s infinite}@keyframes shine{35%,100%{transform:translateX(100%)}}.brand{text-align:center;margin-bottom:28px;position:relative}.brand .logo{width:74px;height:74px;margin:0 auto 12px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(135deg,var(--red),#65000c);box-shadow:0 0 35px rgba(255,36,54,.35);font-size:30px;font-weight:800}.brand h1{font-size:36px;letter-spacing:2px}.brand p{color:var(--muted);font-size:14px;margin-top:6px}.input{width:100%;padding:15px 16px;border-radius:16px;background:#09090d;border:1px solid var(--line);color:#fff;outline:none;font:inherit;margin-bottom:14px}.input:focus{border-color:rgba(255,36,54,.7);box-shadow:0 0 0 4px rgba(255,36,54,.12)}.btn{border:0;border-radius:15px;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;transition:.18s;color:#fff}.btn:active{transform:scale(.98)}.btn-red{width:100%;background:linear-gradient(135deg,#ff4a57,var(--red) 45%,var(--red2));box-shadow:0 16px 40px rgba(255,36,54,.28)}.btn-dark{background:rgba(255,255,255,.06);border:1px solid var(--line)}.btn-danger{background:rgba(255,36,54,.12);color:#ff6b75;border:1px solid rgba(255,36,54,.18)}.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}.side{position:sticky;top:0;height:100vh;padding:22px;border-right:1px solid var(--line);background:rgba(7,7,10,.72);backdrop-filter:blur(22px)}.side-logo{display:flex;gap:12px;align-items:center;margin-bottom:28px}.side-logo .mark{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--red),#65000c);display:grid;place-items:center;font-weight:800;box-shadow:0 0 25px rgba(255,36,54,.25)}.side-logo b{font-size:20px;letter-spacing:1px}.side-logo span{display:block;font-size:12px;color:var(--muted)}.nav{display:grid;gap:8px}.nav button{justify-content:flex-start;width:100%;background:transparent;border:1px solid transparent;color:#cfcfd6;padding:12px 14px;border-radius:15px}.nav button.active,.nav button:hover{background:rgba(255,36,54,.10);border-color:rgba(255,36,54,.18);color:#fff}.main{padding:26px;max-width:1400px;width:100%;margin:0 auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:25px}.top h2{font-size:30px}.top p{color:var(--muted);font-size:14px;margin-top:4px}.top-actions{display:flex;gap:10px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}.card{background:linear-gradient(180deg,rgba(23,23,31,.88),rgba(13,13,18,.88));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.25);position:relative;overflow:hidden}.card:after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,36,54,.12);filter:blur(20px)}.card .label{color:var(--muted);font-size:13px}.card .value{font-size:34px;font-weight:800;margin-top:6px}.card i{position:absolute;right:20px;top:22px;color:#fff;opacity:.75}.grid{display:grid;grid-template-columns:390px 1fr;gap:18px}.panel{background:rgba(14,14,18,.82);border:1px solid var(--line);border-radius:25px;box-shadow:var(--shadow);overflow:hidden}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}.panel-title{font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px}.form{padding:20px}.field{margin-bottom:14px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.7px}.select{appearance:none}.hint{display:flex;gap:9px;color:#ff7780;background:rgba(255,36,54,.08);border:1px solid rgba(255,36,54,.13);padding:13px;border-radius:15px;font-size:13px}.toolbar{display:flex;gap:10px;align-items:center}.search{width:280px}.chips{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--line)}.chip{border:1px solid var(--line);background:rgba(255,255,255,.04);color:#ccc;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}.chip.active{background:rgba(255,36,54,.14);border-color:rgba(255,36,54,.28);color:#fff}.users{padding:14px;display:grid;gap:10px}.user-row{display:grid;grid-template-columns:1.1fr .9fr .8fr 1.2fr 120px;gap:12px;align-items:center;padding:15px;border:1px solid rgba(255,255,255,.055);border-radius:18px;background:rgba(255,255,255,.025)}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;color:#d8d8df;word-break:break-all}.muted{color:var(--muted);font-size:12px}.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800}.dot{width:7px;height:7px;border-radius:50%}.active-b{background:rgba(24,209,143,.10);color:#6fffc2;border:1px solid rgba(24,209,143,.2)}.inactive-b{background:rgba(255,36,54,.10);color:#ff7780;border:1px solid rgba(255,36,54,.2)}.tier-basic{background:rgba(79,140,255,.11);color:#8bb4ff;border:1px solid rgba(79,140,255,.2)}.tier-intermediate{background:rgba(255,192,67,.11);color:#ffd781;border:1px solid rgba(255,192,67,.2)}.tier-max{background:rgba(255,36,54,.12);color:#ff7b85;border:1px solid rgba(255,36,54,.22)}.mini-select{min-width:140px;padding:9px 10px;border-radius:12px;background:#09090d;border:1px solid var(--line);color:#fff}.actions{display:flex;gap:8px;justify-content:flex-end}.icon-mini{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:#fff;cursor:pointer}.empty{padding:40px;text-align:center;color:var(--muted)}.toast-wrap{position:fixed;right:20px;bottom:20px;display:grid;gap:10px;z-index:10}.toast{background:#111118;border:1px solid var(--line);border-left:4px solid var(--green);padding:13px 15px;border-radius:16px;box-shadow:var(--shadow);font-weight:700}.toast.err{border-left-color:var(--red)}.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:none;place-items:center;z-index:20;padding:20px}.modal.show{display:grid}.modal-card{width:min(420px,100%);background:#111117;border:1px solid rgba(255,36,54,.22);border-radius:24px;padding:25px;text-align:center;box-shadow:var(--shadow)}.modal-card h3{font-size:22px;margin:12px 0}.modal-card p{color:var(--muted);line-height:1.5}.modal-actions{display:flex;gap:10px;margin-top:20px}.mobile-menu{display:none}@media(max-width:1000px){.app{grid-template-columns:1fr}.side{display:none}.main{padding:16px}.mobile-menu{display:flex}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.user-row{grid-template-columns:1fr;gap:9px}.toolbar{flex-direction:column;align-items:stretch}.search{width:100%}}@media(max-width:520px){.cards{grid-template-columns:1fr}.top{flex-direction:column}.top-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.btn{width:100%}.login-card{padding:25px 18px}.brand h1{font-size:30px}}
   </style>
 </head>
 <body>
+<div class="bg-grid"></div>
 <div id="app">
-  <div v-if="!isLoggedIn" class="auth-container">
-    <div class="auth-box">
-      <img src="SaiKuto.png" alt="Logo" style="width:74px;height:74px;border-radius:18px;object-fit:cover;margin-bottom:18px;box-shadow:0 0 22px rgba(255,26,26,.35);" onerror="this.style.display='none'">
-      <div class="auth-title">XEVIN ADMIN</div>
-      <div class="auth-subtitle">Login pakai akun Supabase Auth</div>
-      <form @submit.prevent="handleLogin">
-        <input v-model="auth.email" type="email" class="auth-input" placeholder="Gmail / Email admin" required>
-        <input v-model="auth.password" type="password" class="auth-input" placeholder="Password admin" required>
-        <button type="submit" class="btn btn-red" style="width:100%;padding:14px;" :disabled="auth.loading">
-          <i data-lucide="lock-keyhole" style="width:16px;height:16px;"></i>
-          {{ auth.loading ? 'Memverifikasi...' : 'Masuk Dashboard' }}
-        </button>
-      </form>
-      <div class="auth-note">Akun admin dibuat di Supabase → Authentication → Users. Jangan pakai tabel users untuk password admin.</div>
+  <section v-if="!session" class="login-wrap">
+    <div class="login-card">
+      <div class="brand"><div class="logo">X</div><h1>XEVIN ADMIN</h1><p>Protected by Supabase Auth</p></div>
+      <form @submit.prevent="login"><input class="input" v-model="auth.email" type="email" placeholder="Gmail / Email admin" required><input class="input" v-model="auth.password" type="password" placeholder="Password admin" required><button class="btn btn-red" :disabled="auth.loading"><i data-lucide="lock"></i>{{ auth.loading ? 'Memverifikasi...' : 'Masuk Dashboard' }}</button></form>
+      <p style="margin-top:16px;color:var(--muted);font-size:12px;text-align:center">Akun admin dibuat di Supabase → Authentication → Users.</p>
     </div>
-    <div class="toast-container"><div v-for="t in toasts" :key="t.id" class="toast" :class="t.type === 'error' ? 'toast-error' : 'toast-success'"><i :data-lucide="t.type === 'error' ? 'x-circle' : 'check-circle'" :style="{color:t.type==='error'?'#ef4444':'#10b981',width:'20px',height:'20px'}"></i><span class="toast-text">{{ t.message }}</span></div></div>
-  </div>
-
-  <div v-else class="container">
-    <header class="header">
-      <div class="header-left">
-        <img src="SaiKuto.png" alt="Logo" class="header-logo" onerror="this.style.display='none'">
-        <div>
-          <div class="header-title">XEVIN</div>
-          <div class="header-subtitle">User Login Dashboard - Supabase</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><button class="btn btn-glass" @click="fetchData"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Refresh</button><button class="btn btn-danger-sm" style="padding:8px 14px;" @click="handleLogout"><i data-lucide="log-out" style="width:16px;height:16px;"></i> Logout</button></div>
-    </header>
-
-    <div class="stats-grid">
-      <div class="glass stat-card"><div class="glow" style="background:rgba(255,26,26,.15);"></div><div class="stat-header"><div><div class="stat-label">Total User</div><div class="stat-value">{{ stats.total }}</div></div><div class="stat-icon"><i data-lucide="users"></i></div></div><div class="stat-desc">Semua akun di database</div></div>
-      <div class="glass stat-card"><div class="glow" style="background:rgba(16,185,129,.1);"></div><div class="stat-header"><div><div class="stat-label">HWID Terisi</div><div class="stat-value">{{ stats.bound }}</div></div><div class="stat-icon"><i data-lucide="smartphone"></i></div></div><div class="stat-desc">Akun yang sudah terkunci ke HP</div></div>
-      <div class="glass stat-card"><div class="glow" style="background:rgba(59,130,246,.1);"></div><div class="stat-header"><div><div class="stat-label">Aktif</div><div class="stat-value">{{ stats.active }}</div></div><div class="stat-icon"><i data-lucide="shield-check"></i></div></div><div class="stat-desc">User dengan status active</div></div>
-    </div>
-
-    <div class="main-grid">
-      <div>
-        <div class="glass" style="padding:24px; position:sticky; top:24px;">
-          <h3 style="font-size:18px;font-weight:600;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><i data-lucide="user-plus" style="width:20px;height:20px;color:#ff1a1a;"></i> Tambah User Baru</h3>
-          <form @submit.prevent="addUser">
-            <div class="form-group"><label class="form-label">Username</label><input v-model="form.username" type="text" class="form-input" placeholder="contoh: ridho" required></div>
-            <div class="form-group"><label class="form-label">Password</label><input v-model="form.password" type="text" class="form-input" placeholder="contoh: 12345" required></div>
-            <div class="form-group"><label class="form-label">Status</label><select v-model="form.status" class="form-select"><option value="active">active</option><option value="inactive">inactive</option></select></div>
-            <div class="form-group"><label class="form-label">Access Level</label><select v-model="form.tier" class="form-select"><option value="BASIC">BASIC</option><option value="INTERMEDIATE">INTERMEDIATE / IMMED</option><option value="MAX">MAX</option></select></div>
-            <div class="form-group"><label class="form-label">HWID</label><div class="form-static"><i data-lucide="smartphone" style="width:16px;height:16px;"></i> Kosong otomatis, nanti diisi aplikasi saat login pertama</div></div>
-            <button type="submit" class="btn btn-red" style="width:100%;padding:12px;" :disabled="creating"><i data-lucide="database" style="width:16px;height:16px;"></i> {{ creating ? 'Memproses...' : 'Tambahkan Ke Database' }}</button>
-          </form>
-        </div>
-      </div>
-
-      <div>
-        <div class="glass" style="overflow:hidden;">
-          <div class="table-header">
-            <div class="table-title"><i data-lucide="database" style="width:20px;height:20px;"></i> Database User</div>
-            <div class="search-box"><i data-lucide="search" class="search-icon" style="width:16px;height:16px;"></i><input v-model="searchQuery" type="text" placeholder="Cari username / HWID..."></div>
-          </div>
-          <div style="overflow-x:auto; padding:8px 16px 16px;">
-            <table>
-              <thead><tr><th>Username</th><th>Password</th><th>Status</th><th>Tier</th><th>HWID</th><th style="text-align:right;">Aksi</th></tr></thead>
-              <tbody>
-                <tr v-if="loading"><td colspan="6" class="loading-state">Memuat data dari Supabase...</td></tr>
-                <tr v-else-if="filteredUsers.length === 0"><td colspan="6"><div class="empty-state"><i data-lucide="inbox" style="width:32px;height:32px;opacity:.5;"></i><br>Tidak ada user ditemukan.</div></td></tr>
-                <tr v-for="u in filteredUsers" :key="u.username">
-                  <td class="mono">{{ u.username }}</td>
-                  <td class="mono">{{ u.password }}</td>
-                  <td><span :class="['badge', u.status === 'active' ? 'badge-active' : 'badge-inactive']" @click="toggleStatus(u)"><span :class="['badge-dot', u.status === 'active' ? 'dot-active' : 'dot-inactive']"></span>{{ u.status }}</span></td>
-                  <td><select class="form-select" style="min-width:150px;padding:8px 10px;" :value="u.tier || 'BASIC'" @change="updateTier(u, $event.target.value)"><option value="BASIC">BASIC</option><option value="INTERMEDIATE">INTERMEDIATE</option><option value="MAX">MAX</option></select></td>
-                  <td><div style="display:flex;align-items:center;gap:8px;"><span v-if="hasHWID(u)" class="mono" style="font-size:12px;color:#888;">{{ u.hwid }}</span><span v-else class="badge badge-available">Tersedia</span><button v-if="hasHWID(u)" class="btn-danger-sm" style="padding:4px;background:rgba(255,255,255,.05);color:#ccc;" @click="resetHWID(u)" title="Reset HWID"><i data-lucide="refresh-cw" style="width:12px;height:12px;"></i></button></div></td>
-                  <td style="text-align:right;"><button class="btn-danger-sm" @click="confirmDelete(u.username)" title="Hapus User"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" :class="{active: deleteModal.show}">
-      <div class="modal-box"><div class="modal-icon"><i data-lucide="alert-triangle" style="width:32px;height:32px;"></i></div><div class="modal-title">Hapus User?</div><div class="modal-desc">Yakin ingin menghapus user <strong class="mono" style="color:#fff;">{{ deleteModal.username }}</strong>?<br><br>Tindakan ini tidak bisa dibatalkan.</div><div class="modal-actions"><button class="modal-btn modal-btn-cancel" @click="deleteModal.show=false">Batal</button><button class="modal-btn btn-red" @click="executeDelete">Ya, Hapus!</button></div></div>
-    </div>
-
-    <div class="toast-container"><div v-for="t in toasts" :key="t.id" class="toast" :class="t.type === 'error' ? 'toast-error' : 'toast-success'"><i :data-lucide="t.type === 'error' ? 'x-circle' : 'check-circle'" :style="{color:t.type==='error'?'#ef4444':'#10b981',width:'20px',height:'20px'}"></i><span class="toast-text">{{ t.message }}</span></div></div>
-  </div>
+  </section>
+  <section v-else class="app">
+    <aside class="side"><div class="side-logo"><div class="mark">X</div><div><b>XEVIN</b><span>Admin Control Center</span></div></div><div class="nav"><button class="active"><i data-lucide="layout-dashboard"></i> Dashboard</button><button><i data-lucide="users"></i> Users</button><button><i data-lucide="shield"></i> Security</button><button><i data-lucide="terminal"></i> Logs</button></div></aside>
+    <main class="main"><div class="top"><div><h2>XEVIN Dashboard</h2><p>Kelola akun, HWID, status, dan tier dari satu panel.</p></div><div class="top-actions"><button class="btn btn-dark" @click="fetchData"><i data-lucide="refresh-cw"></i> Refresh</button><button class="btn btn-danger" @click="logout"><i data-lucide="log-out"></i> Logout</button></div></div>
+      <div class="cards"><div class="card"><i data-lucide="users"></i><div class="label">Total User</div><div class="value">{{stats.total}}</div></div><div class="card"><i data-lucide="smartphone"></i><div class="label">HWID Terisi</div><div class="value">{{stats.bound}}</div></div><div class="card"><i data-lucide="shield-check"></i><div class="label">Aktif</div><div class="value">{{stats.active}}</div></div><div class="card"><i data-lucide="crown"></i><div class="label">MAX Tier</div><div class="value">{{stats.max}}</div></div></div>
+      <div class="grid"><section class="panel"><div class="panel-head"><div class="panel-title"><i data-lucide="user-plus"></i> Tambah User</div></div><form class="form" @submit.prevent="addUser"><div class="field"><label>Username</label><input class="input" v-model="form.username" placeholder="contoh: xevin1" required></div><div class="field"><label>Password</label><input class="input" v-model="form.password" placeholder="contoh: hc12345" required></div><div class="field"><label>Status</label><select class="input select" v-model="form.status"><option value="active">active</option><option value="inactive">inactive</option></select></div><div class="field"><label>Access Level</label><select class="input select" v-model="form.tier"><option value="BASIC">BASIC</option><option value="INTERMEDIATE">INTERMEDIATE / IMMED</option><option value="MAX">MAX</option></select></div><div class="field"><label>HWID</label><div class="hint"><i data-lucide="smartphone"></i>Kosong otomatis, nanti diisi aplikasi saat login pertama.</div></div><button class="btn btn-red" :disabled="creating"><i data-lucide="database"></i>{{creating?'Memproses...':'Tambahkan Ke Database'}}</button></form></section>
+      <section class="panel"><div class="panel-head"><div class="panel-title"><i data-lucide="database"></i> Database User</div><div class="toolbar"><input class="input search" v-model="search" placeholder="Cari username / HWID / tier..."></div></div><div class="chips"><button class="chip" :class="{active:filter==='ALL'}" @click="filter='ALL'">All</button><button class="chip" :class="{active:filter==='BASIC'}" @click="filter='BASIC'">BASIC</button><button class="chip" :class="{active:filter==='INTERMEDIATE'}" @click="filter='INTERMEDIATE'">INTERMEDIATE</button><button class="chip" :class="{active:filter==='MAX'}" @click="filter='MAX'">MAX</button></div><div class="users"><div v-if="loading" class="empty">Memuat data...</div><div v-else-if="filtered.length===0" class="empty"><i data-lucide="inbox"></i><br>Tidak ada user ditemukan.</div><div v-for="u in filtered" :key="u.username" class="user-row"><div><b class="mono">{{u.username}}</b><div class="muted">Password: <span class="mono">{{u.password}}</span></div></div><div><span :class="['badge',u.status==='active'?'active-b':'inactive-b']" @click="toggleStatus(u)"><span class="dot" :style="{background:u.status==='active'?'var(--green)':'var(--red)'}"></span>{{u.status}}</span></div><div><select class="mini-select" :value="u.tier||'BASIC'" @change="updateTier(u,$event.target.value)"><option>BASIC</option><option>INTERMEDIATE</option><option>MAX</option></select></div><div><span v-if="hasHWID(u)" class="mono">{{u.hwid}}</span><span v-else class="badge tier-basic">Tersedia</span></div><div class="actions"><button v-if="hasHWID(u)" class="icon-mini" @click="resetHWID(u)" title="Reset HWID"><i data-lucide="rotate-ccw"></i></button><button class="icon-mini" style="color:#ff6570;background:rgba(255,36,54,.10)" @click="confirmDelete(u.username)" title="Hapus"><i data-lucide="trash-2"></i></button></div></div></div></section></div>
+    </main>
+  </section>
+  <div class="modal" :class="{show:modal.show}"><div class="modal-card"><i data-lucide="triangle-alert" style="color:var(--red);width:48px;height:48px"></i><h3>Hapus User?</h3><p>Yakin hapus <b>{{modal.username}}</b>? Tindakan ini tidak bisa dibatalkan.</p><div class="modal-actions"><button class="btn btn-dark" @click="modal.show=false">Batal</button><button class="btn btn-red" @click="deleteUser">Hapus</button></div></div></div>
+  <div class="toast-wrap"><div v-for="t in toasts" :key="t.id" class="toast" :class="{err:t.type==='error'}">{{t.message}}</div></div>
 </div>
-
 <script>
-  // GANTI INI SESUAI PROJECT SUPABASE KAMU
-  const SUPABASE_PROJECT_URL = 'https://qyqkwzrjvnzgvazaelfk.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_CunTxykFvpiZ-NyZMyo95Q_9sAwcGur';
-  const TABLE_NAME = 'users';
-  const SUPABASE_AUTH_URL = `${SUPABASE_PROJECT_URL}/auth/v1/token?grant_type=password`;
-  const AUTH_TOKEN_KEY = 'xevin_admin_access_token';
-
-  const SUPABASE_URL = `${SUPABASE_PROJECT_URL}/rest/v1/${TABLE_NAME}`;
-
-  function headers(extra = {}) {
-    return {
-      'apikey': SUPABASE_ANON_KEY,
-      'Authorization': 'Bearer ' + (localStorage.getItem(AUTH_TOKEN_KEY) || SUPABASE_ANON_KEY),
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
-      ...extra
-    };
-  }
-
-  async function supaFetch(query = '', method = 'GET', body = null) {
-    const opts = { method, headers: headers() };
-    if (body) opts.body = JSON.stringify(body);
-    return fetch(SUPABASE_URL + query, opts);
-  }
-
-  const { createApp } = Vue;
-  createApp({
-    data() {
-      return {
-        users: [], loading: true, creating: false, searchQuery: '',
-        isLoggedIn: !!localStorage.getItem(AUTH_TOKEN_KEY),
-        auth: { email: '', password: '', loading: false },
-        form: { username: '', password: '', status: 'active', tier: 'BASIC' },
-        deleteModal: { show: false, username: '' }, toasts: []
-      };
-    },
-    computed: {
-      filteredUsers() {
-        const q = this.searchQuery.toLowerCase().trim();
-        if (!q) return this.users;
-        return this.users.filter(u =>
-          (u.username || '').toLowerCase().includes(q) ||
-          (u.password || '').toLowerCase().includes(q) ||
-          (u.hwid || '').toLowerCase().includes(q) ||
-          (u.status || '').toLowerCase().includes(q) ||
-          (u.tier || '').toLowerCase().includes(q)
-        );
-      },
-      stats() {
-        return {
-          total: this.users.length,
-          bound: this.users.filter(u => this.hasHWID(u)).length,
-          active: this.users.filter(u => u.status === 'active').length
-        };
-      }
-    },
-    mounted() { if (this.isLoggedIn) this.fetchData(); else this.loading = false; setTimeout(() => lucide.createIcons(), 50); },
-    updated() { lucide.createIcons(); },
-    methods: {
-      async handleLogin() {
-        this.auth.loading = true;
-        try {
-          const res = await fetch(SUPABASE_AUTH_URL, {
-            method: 'POST',
-            headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: this.auth.email.trim(), password: this.auth.password })
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.access_token) {
-            this.showToast(data.error_description || data.msg || 'Email atau password admin salah!', 'error');
-            return;
-          }
-          localStorage.setItem(AUTH_TOKEN_KEY, data.access_token);
-          this.isLoggedIn = true;
-          this.showToast('Login admin berhasil!', 'success');
-          await this.fetchData();
-        } catch (e) {
-          this.showToast('Gagal login: ' + e.message, 'error');
-        } finally {
-          this.auth.loading = false;
-        }
-      },
-      handleLogout() {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-        this.isLoggedIn = false;
-        this.users = [];
-        this.auth.password = '';
-        this.showToast('Logout berhasil.', 'success');
-      },
-      hasHWID(u) { return u.hwid && u.hwid !== 'null' && String(u.hwid).trim() !== ''; },
-      async fetchData(silent = false) {
-        if (!silent) this.loading = true;
-        try {
-          const res = await supaFetch('?select=*&order=created_at.desc');
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          this.users = await res.json();
-        } catch (e) { this.showToast('Gagal memuat data: ' + e.message, 'error'); }
-        finally { this.loading = false; }
-      },
-      async addUser() {
-        const username = this.form.username.trim().toLowerCase();
-        const password = this.form.password.trim();
-        if (!username || !password) return this.showToast('Username dan password wajib diisi!', 'error');
-        this.creating = true;
-        try {
-          const payload = { username, password, hwid: '', status: this.form.status || 'active', tier: this.form.tier || 'BASIC' };
-          const res = await supaFetch('', 'POST', payload);
-          if (res.ok) {
-            this.showToast('User berhasil ditambahkan!', 'success');
-            this.form = { username: '', password: '', status: 'active', tier: 'BASIC' };
-            this.fetchData(true);
-          } else {
-            const err = await res.json().catch(() => ({}));
-            if (res.status === 409 || String(err.message || '').includes('duplicate')) this.showToast('Username sudah ada!', 'error');
-            else this.showToast('Error: ' + (err.message || res.status), 'error');
-          }
-        } catch (e) { this.showToast('Network error: ' + e.message, 'error'); }
-        finally { this.creating = false; }
-      },
-      async toggleStatus(u) {
-        const oldStatus = u.status;
-        const newStatus = oldStatus === 'active' ? 'inactive' : 'active';
-        u.status = newStatus;
-        try {
-          const res = await supaFetch('?username=eq.' + encodeURIComponent(u.username), 'PATCH', { status: newStatus });
-          if (res.ok) this.showToast('Status berhasil diubah!', 'success');
-          else { u.status = oldStatus; this.showToast('Gagal ubah status. Cek policy Supabase.', 'error'); }
-        } catch (e) { u.status = oldStatus; this.showToast('Network error: ' + e.message, 'error'); }
-      },
-
-      async updateTier(u, tier) {
-        const oldTier = u.tier || 'BASIC';
-        u.tier = tier;
-        try {
-          const res = await supaFetch('?username=eq.' + encodeURIComponent(u.username), 'PATCH', { tier });
-          if (res.ok) this.showToast('Tier berhasil diubah ke ' + tier + '!', 'success');
-          else { u.tier = oldTier; this.showToast('Gagal ubah tier. Cek policy Supabase.', 'error'); }
-        } catch (e) { u.tier = oldTier; this.showToast('Network error: ' + e.message, 'error'); }
-      },
-      async resetHWID(u) {
-        const old = u.hwid; u.hwid = '';
-        try {
-          const res = await supaFetch('?username=eq.' + encodeURIComponent(u.username), 'PATCH', { hwid: '' });
-          if (res.ok) this.showToast('HWID berhasil di-reset!', 'success');
-          else { u.hwid = old; this.showToast('Gagal reset HWID.', 'error'); }
-        } catch (e) { u.hwid = old; this.showToast('Network error: ' + e.message, 'error'); }
-      },
-      confirmDelete(username) { this.deleteModal.username = username; this.deleteModal.show = true; },
-      async executeDelete() {
-        const username = this.deleteModal.username;
-        this.deleteModal.show = false;
-        try {
-          const res = await supaFetch('?username=eq.' + encodeURIComponent(username), 'DELETE');
-          if (res.ok) { this.users = this.users.filter(u => u.username !== username); this.showToast('User berhasil dihapus.', 'success'); }
-          else this.showToast('Gagal hapus user. Cek policy Supabase.', 'error');
-        } catch (e) { this.showToast('Network error: ' + e.message, 'error'); }
-      },
-      showToast(message, type = 'success') {
-        const id = Date.now() + Math.random();
-        this.toasts.push({ id, message, type });
-        setTimeout(() => lucide.createIcons(), 50);
-        setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 4000);
-      }
-    }
-  }).mount('#app');
+const SUPABASE_PROJECT_URL='https://qyqkwzrjvnzgvazaelfk.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_CunTxykFvpiZ-NyZMyo95Q_9sAwcGur';
+const TABLE_NAME='users';
+const AUTH_URL=SUPABASE_PROJECT_URL+'/auth/v1/token?grant_type=password';
+const REST_URL=SUPABASE_PROJECT_URL+'/rest/v1/'+TABLE_NAME;
+function authHeaders(token,extra={}){return {'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+(token||SUPABASE_ANON_KEY),'Content-Type':'application/json','Prefer':'return=representation',...extra}}
+const {createApp}=Vue;createApp({data(){return{session:JSON.parse(localStorage.getItem('xevin_admin_session')||'null'),auth:{email:'',password:'',loading:false},users:[],loading:true,creating:false,search:'',filter:'ALL',form:{username:'',password:'',status:'active',tier:'BASIC'},modal:{show:false,username:''},toasts:[]}},computed:{filtered(){let q=this.search.toLowerCase().trim();return this.users.filter(u=>{let tier=(u.tier||'BASIC');let pass=this.filter==='ALL'||tier===this.filter;let text=[u.username,u.password,u.hwid,u.status,tier].join(' ').toLowerCase();return pass&&(!q||text.includes(q))})},stats(){return{total:this.users.length,bound:this.users.filter(this.hasHWID).length,active:this.users.filter(u=>u.status==='active').length,max:this.users.filter(u=>(u.tier||'BASIC')==='MAX').length}}},mounted(){if(this.session)this.fetchData();setTimeout(()=>lucide.createIcons(),80)},updated(){lucide.createIcons()},methods:{token(){return this.session&&this.session.access_token},hasHWID(u){return u.hwid&&u.hwid!=='null'&&String(u.hwid).trim()!==''},toast(message,type='success'){let id=Date.now()+Math.random();this.toasts.push({id,message,type});setTimeout(()=>this.toasts=this.toasts.filter(t=>t.id!==id),3500)},async login(){this.auth.loading=true;try{let res=await fetch(AUTH_URL,{method:'POST',headers:authHeaders(),body:JSON.stringify({email:this.auth.email.trim(),password:this.auth.password})});let data=await res.json();if(!res.ok||!data.access_token)throw new Error(data.error_description||data.msg||'Invalid login credentials');this.session=data;localStorage.setItem('xevin_admin_session',JSON.stringify(data));this.toast('Login berhasil');await this.fetchData()}catch(e){this.toast(e.message,'error')}finally{this.auth.loading=false}},logout(){localStorage.removeItem('xevin_admin_session');this.session=null;this.users=[]},async api(query='',method='GET',body=null){let opts={method,headers:authHeaders(this.token())};if(body)opts.body=JSON.stringify(body);return fetch(REST_URL+query,opts)},async fetchData(){this.loading=true;try{let res=await this.api('?select=*&order=created_at.desc');if(res.status===401){this.logout();throw new Error('Sesi habis, login ulang')}if(!res.ok)throw new Error('HTTP '+res.status);this.users=await res.json()}catch(e){this.toast('Gagal memuat data: '+e.message,'error')}finally{this.loading=false}},async addUser(){let username=this.form.username.trim().toLowerCase(),password=this.form.password.trim();if(!username||!password)return this.toast('Username dan password wajib diisi','error');this.creating=true;try{let payload={username,password,hwid:'',status:this.form.status,tier:this.form.tier};let res=await this.api('', 'POST', payload);if(!res.ok){let err=await res.json().catch(()=>({}));throw new Error(err.message||res.status)}this.toast('User berhasil ditambahkan');this.form={username:'',password:'',status:'active',tier:'BASIC'};await this.fetchData()}catch(e){this.toast('Error: '+e.message,'error')}finally{this.creating=false}},async patchUser(u,payload){let old={...u};Object.assign(u,payload);try{let res=await this.api('?username=eq.'+encodeURIComponent(u.username),'PATCH',payload);if(!res.ok)throw new Error('Cek RLS policy');return true}catch(e){Object.assign(u,old);this.toast(e.message,'error');return false}},async toggleStatus(u){let ns=u.status==='active'?'inactive':'active';if(await this.patchUser(u,{status:ns}))this.toast('Status diubah ke '+ns)},async updateTier(u,tier){if(await this.patchUser(u,{tier}))this.toast('Tier diubah ke '+tier)},async resetHWID(u){if(await this.patchUser(u,{hwid:''}))this.toast('HWID berhasil di-reset')},confirmDelete(username){this.modal={show:true,username}},async deleteUser(){let username=this.modal.username;this.modal.show=false;try{let res=await this.api('?username=eq.'+encodeURIComponent(username),'DELETE');if(!res.ok)throw new Error('Gagal hapus, cek RLS');this.users=this.users.filter(u=>u.username!==username);this.toast('User berhasil dihapus')}catch(e){this.toast(e.message,'error')}}}}).mount('#app');
 </script>
-</body>
-</html>
+</body></html>
